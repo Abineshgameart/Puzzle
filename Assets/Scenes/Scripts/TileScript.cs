@@ -34,6 +34,7 @@ public class TileScript : MonoBehaviour
         {
             _sprite.color = Color.white;
             inRightPlace = false;
+            
         }
     }
 }
