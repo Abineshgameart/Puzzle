@@ -1,4 +1,4 @@
-# Puzzle
+# PuzzleVerse
 Challenge your mind with this immersive puzzle game! 
 
 Solve intricate puzzles, unravel hidden patterns, and unlock new levels as you sharpen your problem-solving skills. 
