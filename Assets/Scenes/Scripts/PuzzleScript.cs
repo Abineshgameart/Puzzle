@@ -10,8 +10,8 @@ public class PuzzleScript : MonoBehaviour
     [SerializeField] private TileScript[] tiles;
     private int emptySpaceIndex = 15;
     private bool _isFinished;
-    [SerializeField] private GameObject endPanel;
-    [SerializeField] private TextMeshProUGUI endPanelTimerText;
+    [SerializeField] private GameObject endPanel = null, newRecordText = null;
+    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;
 
     // Public
 
@@ -70,6 +70,28 @@ public class PuzzleScript : MonoBehaviour
                 var a = GetComponent<TimerScript>();
                 a.StopTimer();
                 endPanelTimerText.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
+                int bestTime;
+                if (PlayerPrefs.HasKey("bestTime"))
+                {
+                    bestTime = PlayerPrefs.GetInt("bestTime");
+                }
+                else
+                {
+                    bestTime = 999999;
+                }
+                int playerTime = a.minutes * 60 + a.seconds;
+                if (playerTime < bestTime)
+                {
+                    newRecordText.SetActive(true);
+                    PlayerPrefs.SetInt("bestTime", playerTime);
+                }
+                else
+                {
+                    int minutes = bestTime / 60;
+                    int seconds = bestTime - minutes * 60;
+                    bestTimeText.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+                    bestTimeText.transform.parent.gameObject.SetActive(true);
+                }
             }
         }
 
