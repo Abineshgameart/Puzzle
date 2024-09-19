@@ -5,13 +5,16 @@ using UnityEngine.SceneManagement;
 public class PuzzleScript : MonoBehaviour
 {
     // Private
-    [SerializeField] Transform emptySpace;
-    Camera _camera;
-    [SerializeField] private TileScript[] tiles;
-    private int emptySpaceIndex = 15;
-    private bool _isFinished;
-    [SerializeField] private GameObject endPanel = null, newRecordText = null;
-    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;
+    Camera _camera;   // Main Camera
+    [SerializeField] Transform emptySpace;  // Empty Space in the puzzle 
+    [SerializeField] private TileScript[] tiles;  // Puzzle Tiles storing by Array 
+    // private ShuffleScript shuffleScripts;
+
+    private int emptySpaceIndex = 15;    // EmptySpace 
+    private bool _isFinished;   // Variable for Finish Checking
+
+    [SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
+    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Time
 
     // Public
 
@@ -20,34 +23,41 @@ public class PuzzleScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _camera  = Camera.main;
+        _camera  = Camera.main;  // Assigning Main Camera
+        // shuffleScripts.Shuffle(emptySpaceIndex, tiles, emptySpace);
         Shuffle();
     }
 
     // Update is called once per frame
     void Update()
     {
+        // When mouse Left Button Clicked
         if (Input.GetMouseButtonDown(0))
         {
             // Raycast Checking for the finding the tiles clicked by the Mouse
 
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);  // Assining mouse Position by the Ray 
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);  // Assigning Hit Value to the hit
+            
+            // IF Mouse Hitted the Screen
             if (hit)
             {
+                // If the distance between the empty tiles and Hitted Tiles less than 2.2f
                 if (Vector2.Distance(emptySpace.position, hit.transform.position) < 2.2f )
                 {
-                    Vector2 lastEmptySpacePosition = emptySpace.position;
-                    TileScript thisTile = hit.transform.GetComponent<TileScript>();
-                    emptySpace.position = thisTile.targetPosition;
-                    thisTile.targetPosition = lastEmptySpacePosition;
-                    int tileIndex = findIndex(thisTile);
+                    Vector2 lastEmptySpacePosition = emptySpace.position;  // EmptySpace as lastEmptySpacePosition 
+                    TileScript thisTile = hit.transform.GetComponent<TileScript>();  // Getting the Script of the Hitted Tiles
+                    emptySpace.position = thisTile.targetPosition;  // Changin the Position of the Empty Space to Hitted Tiles
+                    thisTile.targetPosition = lastEmptySpacePosition;  // Changing Tiles position to  EmptySpace
+                    int tileIndex = findIndex(thisTile);  // 
                     tiles[emptySpaceIndex] = tiles[tileIndex];
                     tiles[tileIndex] = null;
                     emptySpaceIndex = tileIndex;
                 }
             }
         }
+
+        Debug.Log(tiles.Length);
 
         if (!_isFinished)
         {
@@ -178,6 +188,6 @@ public class PuzzleScript : MonoBehaviour
             inversionsSum += thisTileInvertion;
         }
         return inversionsSum;
-    }
+    }  
 
 }
