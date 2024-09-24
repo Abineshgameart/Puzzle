@@ -116,6 +116,12 @@ public class PuzzleScript : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Calling the Active Scene
     }
 
+    // Main Menu
+    public void MainMenu()
+    {
+        SceneManager.LoadSceneAsync(0);
+    }
+
 
     // Shuffling System
     public void Shuffle()
