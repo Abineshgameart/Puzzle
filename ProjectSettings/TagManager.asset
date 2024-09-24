@@ -41,6 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Tile board
+    uniqueID: 3632877377
+    locked: 0
   - name: tile
     uniqueID: 2341418267
     locked: 0
