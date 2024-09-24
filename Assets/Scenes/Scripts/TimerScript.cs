@@ -13,7 +13,8 @@ public class TimerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        AddToSecond();
+        // AddToSecond();
+        Invoke("AddToSecond", 2);
     }
 
     private void AddToSecond()
