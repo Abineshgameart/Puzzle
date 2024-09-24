@@ -109,6 +109,7 @@ public class PuzzleScript : MonoBehaviour
 
     }
 
+
     // Reloading Function
     public void PlayAgain()
     {
