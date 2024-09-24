@@ -28,6 +28,8 @@ public class PuzzleScript : MonoBehaviour
         Shuffle();
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
@@ -107,9 +109,10 @@ public class PuzzleScript : MonoBehaviour
 
     }
 
+    // Reloading Function
     public void PlayAgain()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Calling the Active Scene
     }
 
 
