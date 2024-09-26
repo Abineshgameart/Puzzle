@@ -116,6 +116,12 @@ public class PuzzleScript : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Calling the Active Scene
     }
 
+    // Next Level
+    public void NextLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // Calling the Active Scene
+    }
+
     // Main Menu
     public void MainMenu()
     {
