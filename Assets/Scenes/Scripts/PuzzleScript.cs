@@ -10,8 +10,10 @@ public class PuzzleScript : MonoBehaviour
     [SerializeField] private TileScript[] tiles;  // Puzzle Tiles storing by Array 
     // private ShuffleScript shuffleScripts;
 
-    private int emptySpaceIndex = 15;    // EmptySpace 
+    private int emptySpaceIndex;    // EmptySpace 
+    private int emptySpaceCheck;
     private bool _isFinished;   // Variable for Finish Checking
+    float distanceThreshold;
 
     [SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
     [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Time
@@ -24,8 +26,19 @@ public class PuzzleScript : MonoBehaviour
     void Start()
     {
         _camera  = Camera.main;  // Assigning Main Camera
+
+        emptySpaceIndex = tiles.Length - 1;
+        emptySpaceCheck = emptySpaceIndex;
         // shuffleScripts.Shuffle(emptySpaceIndex, tiles, emptySpace);
         Shuffle();
+
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+            distanceThreshold = 2.2f;
+        else if (SceneManager.GetActiveScene().buildIndex == 2)
+            distanceThreshold = 1.5f;
+        else if (SceneManager.GetActiveScene().buildIndex == 3)
+            distanceThreshold = 1.3f;
+
     }
 
 
@@ -44,8 +57,10 @@ public class PuzzleScript : MonoBehaviour
             // IF Mouse Hitted the Screen
             if (hit)
             {
+                Debug.Log(distanceThreshold);
+
                 // If the distance between the empty tiles and Hitted Tiles less than 2.2f
-                if (Vector2.Distance(emptySpace.position, hit.transform.position) < 2.2f )
+                if (Vector2.Distance(emptySpace.position, hit.transform.position) < distanceThreshold )
                 {
                     Vector2 lastEmptySpacePosition = emptySpace.position;  // EmptySpace as lastEmptySpacePosition 
                     TileScript thisTile = hit.transform.GetComponent<TileScript>();  // Getting the Script of the Hitted Tiles
@@ -59,7 +74,7 @@ public class PuzzleScript : MonoBehaviour
             }
         }
 
-        Debug.Log(tiles.Length);
+        // Debug.Log(tiles.Length);
 
         if (!_isFinished)
         {
@@ -136,24 +151,24 @@ public class PuzzleScript : MonoBehaviour
         
         // For Empty Space Index position in 15th Tile 
 
-        if (emptySpaceIndex != 15)
+        if (emptySpaceIndex != emptySpaceCheck)
         {
-            var tileOn15LastPos = tiles[15].targetPosition;
-            tiles[15].targetPosition = emptySpace.position;
+            var tileOn15LastPos = tiles[emptySpaceCheck].targetPosition;
+            tiles[emptySpaceCheck].targetPosition = emptySpace.position;
             emptySpace.position = tileOn15LastPos;
-            tiles[emptySpaceIndex] = tiles[15];
-            tiles[15] = null;
-            emptySpaceIndex = 15;
+            tiles[emptySpaceIndex] = tiles[emptySpaceCheck];
+            tiles[emptySpaceCheck] = null;
+            emptySpaceIndex = emptySpaceCheck;
         }
 
         // Shuffling Tiles
         
         do
         {
-            for (int i = 0; i <= 14; i++)
+            for (int i = 0; i <= emptySpaceCheck - 1; i++)
             {
                 var lastPos = tiles[i].targetPosition;
-                int randomIndex = Random.Range(0, 14);
+                int randomIndex = Random.Range(0, emptySpaceCheck - 1);
                 tiles[i].targetPosition = tiles[randomIndex].targetPosition;
                 tiles[randomIndex].targetPosition = lastPos;
                 var tile = tiles[i];
