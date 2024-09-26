@@ -8,7 +8,8 @@ public class PuzzleScript : MonoBehaviour
     Camera _camera;   // Main Camera
     [SerializeField] Transform emptySpace;  // Empty Space in the puzzle 
     [SerializeField] private TileScript[] tiles;  // Puzzle Tiles storing by Array 
-    // private ShuffleScript shuffleScripts;
+
+    AudioManager audioManager;
 
     private int emptySpaceIndex;    // EmptySpace 
     private int emptySpaceCheck;
@@ -16,12 +17,16 @@ public class PuzzleScript : MonoBehaviour
     float distanceThreshold;
 
     [SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
-    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Time
+    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Tim
+
 
     // Public
 
-    
-    
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,38 +51,40 @@ public class PuzzleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // When mouse Left Button Clicked
-        if (Input.GetMouseButtonDown(0))
-        {
-            // Raycast Checking for the finding the tiles clicked by the Mouse
-
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);  // Assining mouse Position by the Ray 
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);  // Assigning Hit Value to the hit
-            
-            // IF Mouse Hitted the Screen
-            if (hit)
-            {
-                Debug.Log(distanceThreshold);
-
-                // If the distance between the empty tiles and Hitted Tiles less than 2.2f
-                if (Vector2.Distance(emptySpace.position, hit.transform.position) < distanceThreshold )
-                {
-                    Vector2 lastEmptySpacePosition = emptySpace.position;  // EmptySpace as lastEmptySpacePosition 
-                    TileScript thisTile = hit.transform.GetComponent<TileScript>();  // Getting the Script of the Hitted Tiles
-                    emptySpace.position = thisTile.targetPosition;  // Changin the Position of the Empty Space to Hitted Tiles
-                    thisTile.targetPosition = lastEmptySpacePosition;  // Changing Tiles position to  EmptySpace
-                    int tileIndex = findIndex(thisTile);  // 
-                    tiles[emptySpaceIndex] = tiles[tileIndex];
-                    tiles[tileIndex] = null;
-                    emptySpaceIndex = tileIndex;
-                }
-            }
-        }
-
-        // Debug.Log(tiles.Length);
 
         if (!_isFinished)
         {
+            // When mouse Left Button Clicked
+            if (Input.GetMouseButtonDown(0))
+            {
+                // Raycast Checking for the finding the tiles clicked by the Mouse
+
+                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);  // Assining mouse Position by the Ray 
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);  // Assigning Hit Value to the hit
+            
+                // IF Mouse Hitted the Screen
+                if (hit)
+                {
+                    // Debug.Log(distanceThreshold);
+
+                    // If the distance between the empty tiles and Hitted Tiles less than 2.2f
+                    if (Vector2.Distance(emptySpace.position, hit.transform.position) < distanceThreshold )
+                    {
+                        audioManager.PlaySFX(audioManager.tileMovement);
+                        Vector2 lastEmptySpacePosition = emptySpace.position;  // EmptySpace as lastEmptySpacePosition 
+                        TileScript thisTile = hit.transform.GetComponent<TileScript>();  // Getting the Script of the Hitted Tiles
+                        emptySpace.position = thisTile.targetPosition;  // Changin the Position of the Empty Space to Hitted Tiles
+                        thisTile.targetPosition = lastEmptySpacePosition;  // Changing Tiles position to  EmptySpace
+                        int tileIndex = findIndex(thisTile);  // 
+                        tiles[emptySpaceIndex] = tiles[tileIndex];
+                        tiles[tileIndex] = null;
+                        emptySpaceIndex = tileIndex;
+                    }
+                }
+            }
+
+        // Debug.Log(tiles.Length);
+
             int correctTiles = 0;
             foreach (var a in tiles)
             {
@@ -92,6 +99,7 @@ public class PuzzleScript : MonoBehaviour
 
             if (correctTiles == tiles.Length - 1)
             {
+                audioManager.PlaySFX(audioManager.levelCompleted);
                 _isFinished = true;
                 endPanel.SetActive(true);
                 var a = GetComponent<TimerScript>();
