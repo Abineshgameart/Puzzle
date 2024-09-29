@@ -130,6 +130,17 @@ public class PuzzleScript : MonoBehaviour
             }
         }
 
+        // Debug and Testing Cheat Keys
+        /* if (Input.GetKeyDown(KeyCode.N))
+        {
+            int activeScene = SceneManager.GetActiveScene().buildIndex;
+            if (activeScene == SceneManager.sceneCountInBuildSettings)
+            {
+                activeScene = 0;
+            }
+            SceneManager.LoadScene(activeScene + 1);
+        } */
+
     }
 
 
