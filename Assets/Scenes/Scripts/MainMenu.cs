@@ -10,10 +10,12 @@ public class MainMenu : MonoBehaviour
     private static MainMenu instance;
     AudioManager audioManager;
 
-    [SerializeField] public GameObject canvaMenu = null, mainMenu = null, completedMenu = null, newRecordText = null;
+    [SerializeField] public GameObject canvaMenu = null, mainMenu = null, pauseMenu = null, completedMenu = null, newRecordText = null;
     [SerializeField] private TextMeshProUGUI CompletedMenuTimerText, bestTimeText;   // Finished Time and Best Record Timer
+    [SerializeField] public GameObject lastLevelCompletedMenu = null,  lastLevelNewRecordText = null;
+    [SerializeField] private TextMeshProUGUI lastCompletedMenuTimerText, lastBestTimeText;
     [SerializeField] private GameObject level2RefImg, level3RefImg;
-    [SerializeField] private Button pauseButton, soundButton;
+    [SerializeField] private Button pauseButton;
     TimerScript timerScript;
 
     // Public
@@ -27,35 +29,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        //timerScript = FindObjectOfType<TimerScript>();
-
-        //if (instance == null)
-        //{
-        //    // If no instance, make this the instance and don't destroy it
-        //    instance = this;
-        //    DontDestroyOnLoad(gameObject);
-        //}
-        //else
-        //{
-        //    // If an instance already exists, destroy the new one
-        //    Destroy(gameObject);
-        //}
-
-
-        //// Ensure the mainMenu is assigned
-        //if (mainMenu == null)
-        //{
-        //    Debug.LogError("mainMenu is not assigned in the Inspector!");
-        //    return;
-        //}
-
-        //// Ensure the correct activation state of mainMenu based on the scene
-        //HandleMainMenu();
-
-        //// Subscribe to the scene change event
-        //SceneManager.sceneLoaded += OnSceneLoaded;
-
-
+     
         if (instance == null)
         {
             // If no instance, make this the instance and don't destroy it
@@ -206,7 +180,6 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-
     public void PlayGame()
     {
         timerScript.Invoke("InitializeTimer", 1);
@@ -220,7 +193,14 @@ public class MainMenu : MonoBehaviour
 
     public void PauseMenu()
     {
-        
+        if (pauseMenu.gameObject.activeSelf)
+        {
+            pauseMenu.SetActive(false);
+        }
+        else
+        {
+            pauseMenu.SetActive(true);
+        }
     }
 
 
@@ -230,46 +210,60 @@ public class MainMenu : MonoBehaviour
         audioManager.PlaySFX(audioManager.levelCompleted);
         Debug.Log("CompletedMenu called"); // To ensure the method is being called
 
+        if (SceneManager.GetActiveScene().buildIndex == 3)
+        {
+            lastLevelCompletedMenu.SetActive(true);
+            CompletedActivities(lastCompletedMenuTimerText, lastBestTimeText, lastLevelNewRecordText);
+        } 
+        else
+        {
+            Debug.Log(SceneManager.GetActiveScene().buildIndex);
+            completedMenu.SetActive(true);
+            CompletedActivities(CompletedMenuTimerText, bestTimeText, newRecordText);
+        }
 
-        completedMenu.SetActive(true);
+        
+        
+    }
+
+    void CompletedActivities(TextMeshProUGUI completedTime,TextMeshProUGUI bestTime, GameObject newRecord)
+    {
         var a = timerScript;
         a.StopTimer();
         pauseButton.gameObject.SetActive(false);
-        CompletedMenuTimerText.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
-        int bestTime;
+        completedTime.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
+        int bestTimeCal;
         if (PlayerPrefs.HasKey("bestTime"))
         {
-            bestTime = PlayerPrefs.GetInt("bestTime");
+            bestTimeCal = PlayerPrefs.GetInt("bestTime");
         }
         else
         {
-            bestTime = 999999;
+            bestTimeCal = 999999;
         }
         int playerTime = a.minutes * 60 + a.seconds;
-        if (playerTime < bestTime)
+        if (playerTime < bestTimeCal)
         {
             if (bestTimeText.transform.parent.gameObject.activeSelf)
             {
                 bestTimeText.transform.parent.gameObject.SetActive(false);
             }
-            newRecordText.SetActive(true);
+            newRecord.SetActive(true);
             PlayerPrefs.SetInt("bestTime", playerTime);
         }
         else
         {
-            if (newRecordText.activeSelf)
+            if (newRecord.activeSelf)
             {
-                newRecordText.SetActive(false);
+                newRecord.SetActive(false);
             }
-            
-            int minutes = bestTime / 60;
-            int seconds = bestTime - minutes * 60;
-            bestTimeText.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-            bestTimeText.transform.parent.gameObject.SetActive(true);
+
+            int minutes = bestTimeCal / 60;
+            int seconds = bestTimeCal - minutes * 60;
+            bestTime.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+            bestTime.transform.parent.gameObject.SetActive(true);
         }
     }
-
-    // void CompletedActivities(TextMeshProUGUI )
 
     void ResettingCompForLevels()
     {
@@ -287,6 +281,11 @@ public class MainMenu : MonoBehaviour
         if (pauseButton != null)
         {
             pauseButton.gameObject.SetActive(true);
+        }
+
+        if (pauseMenu.activeSelf)
+        {
+            pauseMenu.SetActive(false);
         }
     }
     
@@ -316,15 +315,31 @@ public class MainMenu : MonoBehaviour
         
     }
 
-    // Main Menu
-    public void ToMainMenu()
+    void ForToMainMenuResetting()
     {
-        Debug.Log("Play Again");
         timerScript.StopTimer();
         if (completedMenu != null)
         {
             completedMenu.SetActive(false);  // Ensure it's hidden at the start of the level
         }
+        if (lastLevelCompletedMenu != null)
+        {
+            lastLevelCompletedMenu.SetActive(false);  // Ensure it's hidden at the start of the level
+        }
+        if (pauseMenu.activeSelf)
+        {
+            pauseMenu.SetActive(false);
+        }
+
+    }
+
+    // Main Menu
+    public void ToMainMenu()
+    {
+        ForToMainMenuResetting();
         SceneManager.LoadSceneAsync(0);
     }
 }
+
+
+
