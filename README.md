@@ -1,5 +1,7 @@
 # PuzzleVerse
 
+![puzzleverse-banner](Assets/Scenes/Sprites/puzzleVerse.png)
+
 ## Game Overview for PuzzleVerse
 
 PuzzleVerse is a captivating puzzle game built with Unity 2D, designed to challenge players with a series of intricate and visually engaging puzzles. The game features three distinct levels, each progressively increasing in complexity to test the player's logic, problem-solving skills, and creativity. PuzzleVerse offers an immersive experience where every solved puzzle unlocks new challenges, rewarding the player with a sense of accomplishment and intellectual growth.
