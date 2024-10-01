@@ -17,9 +17,6 @@ public class PuzzleScript : MonoBehaviour
     private bool _isFinished;   // Variable for Finish Checking
     float distanceThreshold;
 
-    //[SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
-    //[SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Tim
-
 
     // Public
     public int correctTiles = 0;
@@ -40,7 +37,7 @@ public class PuzzleScript : MonoBehaviour
         emptySpaceIndex = tiles.Length - 1;
         emptySpaceCheck = emptySpaceIndex;
         // shuffleScripts.Shuffle(emptySpaceIndex, tiles, emptySpace);
-        // Shuffle();
+        Shuffle();
 
         if (SceneManager.GetActiveScene().buildIndex == 1)
             distanceThreshold = 2.2f;
@@ -103,63 +100,16 @@ public class PuzzleScript : MonoBehaviour
             }
 
 
-            //foreach (var a in tiles)
-            //{
-            //    if (a != null)
-            //    {
-            //        if (a.inRightPlace)
-            //        {
-            //            correctTiles++;
-            //        }
-            //    }
-            //}
-
             if (correctTiles == tiles.Length - 1 && !_isFinished)
             {
                 
                 // audioManager.PlaySFX(audioManager.levelCompleted);
                 _isFinished = true;
                 Debug.Log("Puzzle Solved");
-                mainMenu.CompletedMenu();
-                //endPanel.SetActive(true);
-                //var a = GetComponent<TimerScript>();
-                //a.StopTimer();
-                //endPanelTimerText.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
-                //int bestTime;
-                //if (PlayerPrefs.HasKey("bestTime"))
-                //{
-                //    bestTime = PlayerPrefs.GetInt("bestTime");
-                //}
-                //else
-                //{
-                //    bestTime = 999999;
-                //}
-                //int playerTime = a.minutes * 60 + a.seconds;
-                //if (playerTime < bestTime)
-                //{
-                //    newRecordText.SetActive(true);
-                //    PlayerPrefs.SetInt("bestTime", playerTime);
-                //}
-                //else
-                //{
-                //    int minutes = bestTime / 60;
-                //    int seconds = bestTime - minutes * 60;
-                //    bestTimeText.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-                //    bestTimeText.transform.parent.gameObject.SetActive(true);
-                //}
+                mainMenu.Invoke("CompletedMenu", 1);
+                
             }
         }
-
-        // Debug and Testing Cheat Keys
-        /* if (Input.GetKeyDown(KeyCode.N))
-        {
-            int activeScene = SceneManager.GetActiveScene().buildIndex;
-            if (activeScene == SceneManager.sceneCountInBuildSettings)
-            {
-                activeScene = 0;
-            }
-            SceneManager.LoadScene(activeScene + 1);
-        } */
 
     }
     
