@@ -10,21 +10,26 @@ public class PuzzleScript : MonoBehaviour
     [SerializeField] private TileScript[] tiles;  // Puzzle Tiles storing by Array 
 
     AudioManager audioManager;
+    MainMenu mainMenu;
 
     private int emptySpaceIndex;    // EmptySpace 
     private int emptySpaceCheck;
     private bool _isFinished;   // Variable for Finish Checking
     float distanceThreshold;
 
-    [SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
-    [SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Tim
+    //[SerializeField] private GameObject endPanel = null, newRecordText = null;  // 
+    //[SerializeField] private TextMeshProUGUI endPanelTimerText, bestTimeText;   // Finished Time and Best Record Tim
 
 
     // Public
+    public int correctTiles = 0;
+
+
 
     private void Awake()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        mainMenu = GameObject.FindObjectOfType<MainMenu>();  // Find the MainMenu script in the scene
     }
 
     // Start is called before the first frame update
@@ -35,14 +40,14 @@ public class PuzzleScript : MonoBehaviour
         emptySpaceIndex = tiles.Length - 1;
         emptySpaceCheck = emptySpaceIndex;
         // shuffleScripts.Shuffle(emptySpaceIndex, tiles, emptySpace);
-        Shuffle();
+        // Shuffle();
 
         if (SceneManager.GetActiveScene().buildIndex == 1)
             distanceThreshold = 2.2f;
         else if (SceneManager.GetActiveScene().buildIndex == 2)
             distanceThreshold = 1.5f;
         else if (SceneManager.GetActiveScene().buildIndex == 3)
-            distanceThreshold = 1.3f;
+            distanceThreshold = 1.2f;
 
     }
 
@@ -54,6 +59,9 @@ public class PuzzleScript : MonoBehaviour
 
         if (!_isFinished)
         {
+            // Reset the correctTiles counter each frame
+            correctTiles = 0;
+
             // When mouse Left Button Clicked
             if (Input.GetMouseButtonDown(0))
             {
@@ -83,50 +91,62 @@ public class PuzzleScript : MonoBehaviour
                 }
             }
 
-        // Debug.Log(tiles.Length);
+            // Debug.Log(tiles.Length);
 
-            int correctTiles = 0;
-            foreach (var a in tiles)
+            // Check if all tiles are in their correct place
+            foreach (var tile in tiles)
             {
-                if (a != null)
+                if (tile != null && tile.inRightPlace)
                 {
-                    if (a.inRightPlace)
-                    {
-                        correctTiles++;
-                    }
+                    correctTiles++;
                 }
             }
 
-            if (correctTiles == tiles.Length - 1)
+
+            //foreach (var a in tiles)
+            //{
+            //    if (a != null)
+            //    {
+            //        if (a.inRightPlace)
+            //        {
+            //            correctTiles++;
+            //        }
+            //    }
+            //}
+
+            if (correctTiles == tiles.Length - 1 && !_isFinished)
             {
-                audioManager.PlaySFX(audioManager.levelCompleted);
+                
+                // audioManager.PlaySFX(audioManager.levelCompleted);
                 _isFinished = true;
-                endPanel.SetActive(true);
-                var a = GetComponent<TimerScript>();
-                a.StopTimer();
-                endPanelTimerText.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
-                int bestTime;
-                if (PlayerPrefs.HasKey("bestTime"))
-                {
-                    bestTime = PlayerPrefs.GetInt("bestTime");
-                }
-                else
-                {
-                    bestTime = 999999;
-                }
-                int playerTime = a.minutes * 60 + a.seconds;
-                if (playerTime < bestTime)
-                {
-                    newRecordText.SetActive(true);
-                    PlayerPrefs.SetInt("bestTime", playerTime);
-                }
-                else
-                {
-                    int minutes = bestTime / 60;
-                    int seconds = bestTime - minutes * 60;
-                    bestTimeText.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-                    bestTimeText.transform.parent.gameObject.SetActive(true);
-                }
+                Debug.Log("Puzzle Solved");
+                mainMenu.CompletedMenu();
+                //endPanel.SetActive(true);
+                //var a = GetComponent<TimerScript>();
+                //a.StopTimer();
+                //endPanelTimerText.text = (a.minutes < 10 ? "0" : "") + a.minutes + ":" + (a.seconds < 10 ? "0" : "") + a.seconds;
+                //int bestTime;
+                //if (PlayerPrefs.HasKey("bestTime"))
+                //{
+                //    bestTime = PlayerPrefs.GetInt("bestTime");
+                //}
+                //else
+                //{
+                //    bestTime = 999999;
+                //}
+                //int playerTime = a.minutes * 60 + a.seconds;
+                //if (playerTime < bestTime)
+                //{
+                //    newRecordText.SetActive(true);
+                //    PlayerPrefs.SetInt("bestTime", playerTime);
+                //}
+                //else
+                //{
+                //    int minutes = bestTime / 60;
+                //    int seconds = bestTime - minutes * 60;
+                //    bestTimeText.text = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+                //    bestTimeText.transform.parent.gameObject.SetActive(true);
+                //}
             }
         }
 
@@ -142,25 +162,7 @@ public class PuzzleScript : MonoBehaviour
         } */
 
     }
-
-
-    // Reloading Function
-    public void PlayAgain()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Calling the Active Scene
-    }
-
-    // Next Level
-    public void NextLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // Calling the Active Scene
-    }
-
-    // Main Menu
-    public void MainMenu()
-    {
-        SceneManager.LoadSceneAsync(0);
-    }
+    
 
 
     // Shuffling System
